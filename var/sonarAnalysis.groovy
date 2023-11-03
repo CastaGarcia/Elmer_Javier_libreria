@@ -1,26 +1,26 @@
-// vars/sonarAnalysis.js
+// vars/sonarAnalysis.groovy
 
-function sonarAnalysis(abortPipeline = false, useSonarQube = true) {
+def call(boolean abortPipeline = false, boolean useSonarQube = true) {
     if (useSonarQube) {
-        console.log("Ejecutando análisis de SonarQube...");
-        // Puedes agregar aquí el código real para ejecutar SonarQube
+        // Ejecutar el escaneo de SonarQube
+        echo "Ejecutando análisis de SonarQube..."
+        // Puedes agregar aquí el comando real para ejecutar SonarQube
     } else {
-        console.log("Ejecución de las pruebas de calidad de código");
+        // Usar "echo" en lugar de SonarQube
+        echo "Ejecución de las pruebas de calidad de código"
     }
 
     // Simular una verificación de QualityGate (cambia esto según tu caso real)
-    const qualityGatePassed = true;
+    def qualityGatePassed = true
 
     if (qualityGatePassed) {
-        console.log("QualityGate: éxito");
+        echo "QualityGate: éxito"
     } else {
-        console.log("QualityGate: fallo");
+        echo "QualityGate: fallo"
         if (abortPipeline) {
-            // Aquí puedes agregar lógica para abortar el pipeline en JavaScript, si es necesario.
-            throw new Error("QualityGate falló, se aborta el pipeline.");
+            currentBuild.result = 'FAILURE'
+            error "QualityGate falló, se aborta el pipeline."
         }
     }
 }
 
-// Exporta la función para que pueda ser utilizada por otros scripts
-module.exports = sonarAnalysis;
