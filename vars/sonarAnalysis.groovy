@@ -1,5 +1,3 @@
-// vars/sonarAnalysis.groovy
-
 def call(boolean abortPipeline = false, boolean useSonarQube = true) {
     if (useSonarQube) {
         // Ejecutar el escaneo de SonarQube
