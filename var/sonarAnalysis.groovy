@@ -1,26 +1,24 @@
-def call(boolean abortPipeline = false, boolean useSonarQube = true) {
-    if (useSonarQube) {
-        // Ejecutar el escaneo de SonarQube
-        echo "Ejecutando análisis de SonarQube..."
-        // Puedes agregar aquí el comando real para ejecutar SonarQube
-        // Ejemplo de comando ficticio:
-        // sh 'sonar-scanner' 
-    } else {
-        // Usar "echo" en lugar de SonarQube
-        echo "Ejecución de las pruebas de calidad de código"
-    }
+    def sonarAnalysis(Map params = [:]) {
+    // Lee la variable de entorno o el valor pasado como parámetro
+    def abortPipelineParam = params.abortPipeline ?: System.getenv('ABORT_PIPELINE')
 
-    // Simular una verificación de QualityGate (cambia esto según tu caso real)
-    def qualityGatePassed = true
-
-    if (qualityGatePassed) {
-        echo "QualityGate: éxito"
+    if (abortPipelineParam == 'true') {
+        // Si el argumento pasado es 'true', corta siempre el pipeline
+        currentBuild.result = 'FAILURE'
+        error "QualityGate falló, se aborta el pipeline."
     } else {
-        echo "QualityGate: fallo"
-        if (abortPipeline) {
+        // Obtiene el nombre de la rama de Git de la que proviene la ejecución
+        def branchName = getCurrentGitBranchName()
+
+        if (branchName == 'main' || branchName.startsWith('hotfix')) {
+            // Corta el pipeline si es la rama 'main' o una rama que comienza con 'hotfix'
             currentBuild.result = 'FAILURE'
             error "QualityGate falló, se aborta el pipeline."
         }
     }
 }
-
+def getCurrentGitBranchName() {
+    // Obtiene el nombre de la rama actual desde las variables de entorno de Jenkins
+    return env.BRANCH_NAME
+}
+sonarAnalysis() // Llama a la función sin argumentos para utilizar valores predeterminados
